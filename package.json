@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test:ui": "mocha --timeout 60000 test/ui.test.js "
+    "test:ui": "mocha --timeout 120000 test/ui.test.js "
   },
   "author": "Tuzova",
   "license": "ISC",
