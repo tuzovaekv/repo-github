@@ -8,108 +8,56 @@ const url = 'https://trello.com';
 const browserName = Capabilities.chrome();
 let driver;
 
-
-
     describe ('UI тесты', function () {
-    afterEach('Удаление доски за собой', async function () {
-    await driver.quit();
 
-
-    })
-    it ('Создание новой доски', async function () {
-   
+  
+    it ('Все тесты', async function () {
+   //Создание новой доски
    const nameBoardToBe = 'Тест'
    await openTrello();
    await createNewBoard();
    let nameBoard  = await driver.findElement(By.css('.js-board-editing-target.board-header-btn-text')).getText();
    expect(nameBoardToBe).equals(nameBoard);
-   await deleteExistingBoard();
-    })
 
+   //Добавление карточки на доску
+   const nameCardToBe = 'Первая карточка'
+   await addCard();        
+   let nameCard  = await driver.findElement(By.css('.list-card-title.js-card-name')).getText();
+   expect(nameCardToBe).equals(nameCard);
+   await driver.manage().setTimeouts({implicit: 40000})  
 
-    it ('Удаление существующей доски', async function () {
-   
+   //Редактирование карточки
+   const quantityOfComentsToBe = '1'
+   await editCard();
+   let quantityOfComents = await driver.findElement(By.css('.badge-text')).getText();
+   expect(quantityOfComentsToBe).equals(quantityOfComents);
+
+   //Перемещение карточки в другую колонку
+   const nameOfNewColumnToBe = 'В процессе'
+   await movingCard();
+   await driver.findElement(By.xpath("//span[text()='Первая карточка']")).click();
+   let nameOfNewColumn  = await driver.findElement(By.css('.js-open-move-from-header')).getText();
+   expect(nameOfNewColumnToBe).equals(nameOfNewColumn);
+   await driver.findElement(By.css('.icon-md.icon-close.dialog-close-button.js-close-window')).click(); 
+
+   //Удаление карточки
+   const comentAboutDeletingToBe = 'pewanop335 удалил(а) карточку #1 из списка В процессе'
+   await deleteCard();
+   await driver.findElement(By.xpath("//span[text()='Меню']")).click();
+   let comentAboutDeleting = await driver.findElement(By.xpath("//div[text()=' удалил(а) карточку #1 из списка В процессе']")).getText();
+   expect(comentAboutDeletingToBe).equals(comentAboutDeleting);
+   await driver.findElement(By.css('.board-menu-header-close-button.icon-lg.icon-close.js-hide-sidebar')).click();
+      
+   //Удаление существующей доски
    const statusBoardToBe = 'Создать доску'
-   await openTrello();
-   await createNewBoard();
    await deleteExistingBoard();
    let board = await driver.findElement(By.css('.board-tile.mod-add'));
    await driver.wait(until.elementIsEnabled(board),6000);
    let statusBoard = await board.getText();
    expect(statusBoardToBe).equals(statusBoard);
     })
+ })
 
-    it ('Добавление карточки на доску', async function () {
-   
-        const nameCardToBe = 'Первая карточка'
-        await openTrello();
-        await createNewBoard();
-        await addCardWithColumns();        
-        let nameCard  = await driver.findElement(By.css('.list-card-title.js-card-name')).getText();
-        expect(nameCardToBe).equals(nameCard);
-        await deleteExistingBoard();
-         })
-
-
-
-    it ('Редактирование карточки', async function () {
-   
-        const quantityOfComentsToBe = '1'
-        await openTrello();
-        await createNewBoard();
-        await addCardWithColumns();
-        await editCard();
-        let quantityOfComents = await driver.findElement(By.css('.badge-text')).getText();
-        expect(quantityOfComentsToBe).equals(quantityOfComents);
-        await deleteExistingBoard();
-         })
-       
-
-    it ('Перемещение карточки в другую колонку', async function () {
-   
-        const nameOfNewColumnToBe = 'В процессе'
-        await openTrello();
-        await createNewBoard();
-        await addCardWithColumns();
-        await movingCard();
-        await driver.findElement(By.xpath("//span[text()='Первая карточка']")).click();
-        let nameOfNewColumn  = await driver.findElement(By.css('.js-open-move-from-header')).getText();
-        expect(nameOfNewColumnToBe).equals(nameOfNewColumn);
-        await driver.findElement(By.css('.icon-md.icon-close.dialog-close-button.js-close-window')).click();
-        await deleteExistingBoard();
-        })
-
-    it ('Удаление карточки', async function () {
-   
-        const comentAboutDeletingToBe = 'pewanop335 удалил(а) карточку #1 из списка Нужно сделать'
-        await openTrello();
-        await createNewBoard();
-        await addCardWithColumns();
-        await deleteCard();
-                
-        await driver.findElement(By.xpath("//span[text()='Меню']")).click();
-        let comentAboutDeleting = await driver.findElement(By.xpath("//div[text()=' удалил(а) карточку #1 из списка Нужно сделать']")).getText();
-        expect(comentAboutDeletingToBe).equals(comentAboutDeleting);
-        await driver.findElement(By.css('.board-menu-header-close-button.icon-lg.icon-close.js-hide-sidebar')).click();
-        let x = await driver.findElement(By.css('.board-menu-header-close-button.icon-lg.icon-close.js-hide-sidebar'));
-        await driver.wait(until.elementIsNotVisible(x),4000);
-        await deleteExistingBoard();
-        })
-
-  })
-
-
-// trello();
-// async function trello() {
-//     await openTrello();
-//     await createNewBoard();
-//     await addCard();
-//     await editCard();
-//     await movingCard();
-//     await deleteCard();
-//     await deleteExistingBoard();
-    
-// }
 
 async function openTrello () {
     driver = await new Builder().withCapabilities(browserName).build();
@@ -151,17 +99,7 @@ async function addCard () {
 
 }
 
-async function addCardWithColumns () {
-    await driver.findElement(By.css('.list-name-input')).sendKeys('Нужно сделать');
-    await driver.findElement(By.css('.nch-button.nch-button--primary.mod-list-add-button.js-save-edit')).click();
-    await driver.findElement(By.css('.js-add-a-card')).click();
-    await driver.findElement(By.css('.list-card-composer-textarea.js-card-title')).sendKeys('Первая карточка');
-    await driver.findElement(By.css('.nch-button.nch-button--primary.confirm.mod-compact.js-add-card')).click();
-    await driver.findElement(By.css('.list-name-input')).sendKeys('В процессе');
-    await driver.findElement(By.css('.nch-button.nch-button--primary.mod-list-add-button.js-save-edit')).click();
-        
-}
-    async function editCard () {
+async function editCard () {
     await driver.findElement(By.xpath("//span[text()='Первая карточка']")).click();
     await driver.findElement(By.css('.comment-box-input.js-new-comment-input')).sendKeys('Комментарий');
     await driver.findElement(By.css('.nch-button.nch-button--primary.confirm.mod-no-top-bottom-margin.js-add-comment')).click();
