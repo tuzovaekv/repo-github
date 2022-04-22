@@ -6,7 +6,8 @@
   "scripts": {
     "test:ui": "mocha --timeout 120000 test/ui.test.js",
     "test:ui(version2)": "mocha --timeout 120000 test/ui.test2.js",
-    "test:api": "mocha --timeout 120000 test/api.test.js"
+    "test:api": "mocha --timeout 120000 test/api.test.js",
+    "test": "mocha --timeout 120000"
     
     
     

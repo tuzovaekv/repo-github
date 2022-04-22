@@ -57,7 +57,7 @@ describe ('API тесты',  function () {
     let infaAboutSecondList = await axios.get(`${trelloUrl}/lists/${idSecondList}/cards`, reqConfig);
     let statusSecondList = infaAboutSecondList.data
     expect(statusSecondList).to.be.empty;
-    console.log(statusSecondList)   
+  
     
     //Удаление доски
     reqConfig.data =  {token: `${token}`};
